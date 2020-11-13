@@ -1,0 +1,256 @@
+<p>
+                      <span>No. <input class="form-control form-control-sm" type="text" name="no_surat" required autocomplete="off" style="width: 150px;display: inline;"> /JS/BPD/KPS/{{$years}}</span> 
+                      <span class="float-right">Jakarta, {{ date('d-M-Y', strtotime($currentDateTime))}}</span>
+                    </p>
+                    <br>
+                    <p>
+                      Kepada,
+                      <br>
+                        
+                        @foreach($poss as $po)
+                          @foreach($vendors as $vendor)
+                              @if($po->Vendor_Driver == $vendor->id)
+                                <?php $vendor_var = $vendor->NamaVendor ?>
+                                <?php $vendor_alamat = $vendor->AlamatVendor ?>
+                                <?php $vendor_pic = $vendor->PICvendor ?>
+                              @endif
+                          @endforeach
+                        @endforeach
+                        <b>{{$vendor_var}}</b>
+
+                      <br>
+
+                        <b>{{$vendor_alamat}}</b>
+                      
+                    </p>
+                    <p>
+                      <b>Up. Yth. <b>{{$vendor_pic}}</b> – 
+                      <input type="text" name="jabatan" class="form-control form-control-sm" list="team_list" id="cabu" placeholder="Jabatan" required autocomplete="off" style="width: 150px;display: inline;">
+                      <datalist id="team_list">
+                        @foreach($jabatans as $jabatan)
+                          <option>{{$jabatan->jabatan}}</option>
+                        @endforeach
+                      </datalist>
+                      </b>
+                    </p>
+                    <p>
+                      Perihal : Relokasi Sewa 
+                      @foreach($poss as $po)
+                        @if($po->Sewa_sementara == 'Mobil+Driver')
+                          <?php $po_sewa = 'Mobil dan Pengemudi' ?>
+                          @break
+                        @elseif($po->Sewa_sementara == 'Mobil')
+                          <?php $po_sewa = 'Mobil' ?>
+                        @elseif($po->Sewa_sementara == 'Driver')
+                          <?php $po_sewa = 'Pengemudi' ?>
+                        @endif
+                      @endforeach
+                      <b>{{$po_sewa}}</b>
+                    </p>
+                    <p>
+                      Dengan hormat,
+                    </p>
+                    <p>
+
+                      @foreach($poss as $po)
+                        @if($po->Sewa_sementara == 'Mobil+Driver')
+                          <?php $count_driver++; ?>
+                          <?php $count_mobil++; ?>
+                        @elseif($po->Sewa_sementara == 'Mobil')
+                          <?php $count_mobil++; ?>
+                        @elseif($po->Sewa_sementara == 'Driver')
+                          <?php $count_driver++; ?>
+                        @endif
+                      @endforeach
+
+
+                      Menunjuk [PKS / Addendum PKS] No. [nomor PKS / Addendum PKS] tanggal
+                      [tanggal PKS / Addendum PKS], dengan ini kami sampaikan relokasi sewa mobil sebanyak <b>{{$count_mobil}}</b> unit dan pengemudi sebanyak <b>{{$count_driver}}</b> orang, dengan data sebagai berikut :
+                    </p>
+                    <br>
+                    <table class="table align-items-center table-flush table-hover text-center " id="myTable" style="width: 100%">
+                      <thead class="">
+                        <tr>
+                          <th scope="col" rowspan="2"><b>No</b></th>
+                          <th scope="col" rowspan="2"><b>Merk/Type/Tahun</b></th> 
+                          <th scope="col" rowspan="2"><b>No polisi</b></th> 
+                          <th scope="col" colspan="2" class="bg-yellow text-white"><b>Cabang Lama</b></th>
+                          <th scope="col" colspan="1" class="bg-info text-white"><b>Cabang Baru</b></th>               
+                          <th scope="col" rowspan="2"><b>Tgl efektif</b></th>   
+                        </tr>
+                        <tr>
+                          <th scope="col" class="bg-yellow text-white"><b>Nama</b></th>
+                          <th scope="col" class="bg-yellow text-white"><b>Kode</b></th>
+                          <th scope="col" class="bg-info text-white"><b>Nama cabang</b></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                         <?php $i = 0; ?>
+                         @foreach($poss as $po)
+                         <?php $i++; ?>
+                         <form action="{{url('/backend/po/edit_relokasi/multiple/'.$po->id)}}" method="post" role="form">
+                           {{ csrf_field() }}
+                           <input type="hidden" name="po_id[]" value="{{$po->id}}">
+                           <tr>
+                             <td>{{$i}}</td>
+
+                             <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+                             <td>
+                               @if(!isset($po->Mobil_id))
+
+                                 <span class="">Tanpa Unit </span>
+                               
+                               @else
+
+                               @foreach($mobils as $mobil)
+                                 @if($po->Mobil_id == $mobil->id)
+                                   <span class="">{{$mobil->MerekMobil}} {{$mobil->Type}} </span>
+                                 @endif
+                               @endforeach
+                               
+                               @endif
+
+                               @if($po->Tgl_cutoff <= $currentDateTime && $po->Tgl_cutoff != '' && $po->Sewa_sementara != 'null')
+                                 @if($po->Sewa_sementara == 'Mobil+Driver')
+                                    <span class="">+ Pengemudi</span>
+                                 @endif
+                               @else
+                                 @if($po->Sewa == 'Mobil+Driver')
+                                    <span class="">+ Pengemudi</span>
+                                 @endif
+                               @endif
+                             </td>
+
+                             <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+                             <td>
+                               @if($po->Nopol == 'null' || $po->Nopol == '')
+
+                                 <span class="">Tanpa Unit</span> 
+                               
+                               @else
+
+                                 <span class="">{{$po->Nopol}}</span>
+
+                               @endif
+                             </td>
+
+                             <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+                             <td>
+                               @if($po->Cabang_relokasi == '')
+                                 @foreach($cabangs as $cabang)
+                                   @if($cabang->id == $po->Cabang_id)
+                                      <span class="">{{$cabang->StatusCabang}} {{$cabang->NamaCabang}}</span> 
+                                   @endif
+                                 @endforeach
+                               @else
+                                 @foreach($cabangs as $cabang)
+                                   @if($cabang->id == $po->Cabang_relokasi)
+                                     <span class="">{{$cabang->StatusCabang}} {{$cabang->NamaCabang}}</span> 
+                                   @endif
+                                 @endforeach
+                               @endif
+                             </td>
+
+                             <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+                             <td>
+                               @if($po->Cabang_relokasi == '')
+                                 @foreach($cabangs as $cabang)
+                                   @if($cabang->id == $po->Cabang_id)
+                                      <span class="">{{$cabang->KodeCabang}}</span> 
+                                   @endif
+                                 @endforeach
+                               @else
+                                 @foreach($cabangs as $cabang)
+                                   @if($cabang->id == $po->Cabang_relokasi)
+                                     <span class="">{{$cabang->KodeCabang}}</span> 
+                                   @endif
+                                 @endforeach
+                               @endif
+                             </td>
+
+                             <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+                             <td class="pt-5">
+                               <div class="form-group">
+                                 <select class="form-control cabang select2" id="cabang{{$i}}" name="cabang_id[]" >
+                                   <option value="unknown">unknown</option>
+                                   <?php $ckota = "" ?>
+                                   @foreach($cabangs as $cabang)
+                                     @if($cabang->active != '1')
+                                     <option value="{{$cabang->id}}">{{$cabang->KWL}} - {{$cabang->KodeCabang}} - {{$cabang->NamaCabang}} - {{$cabang->Kota}}</option>
+                                     <?php $ckota = $cabang->Kota ?>
+                                     @endif
+                                   @endforeach
+                                 </select>
+                               </div>
+                             </td>
+
+                             <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+                             <td>
+                               <input class="form-control date" type="text" name="tgl_efektif_relokasi[]" id="example-date-input" placeholder="mm / dd / yyyy" required autocomplete="off">
+                             </td>
+                           </tr>
+
+                           @if($po->Cabang_relokasi == '')
+                             <input type="hidden" name="cabang_lama[]" value="{{$po->Cabang_id}}">
+                             <input type="hidden" name="nopo_lama[]" value="{{$po->NoPo}}">
+                             <input type="hidden" name="hargasewadriver[]" value="{{$po->HargaSewaDriver2019}}">
+                           @else
+                             <input type="hidden" name="cabang_lama[]" value="{{$po->Cabang_relokasi}}">
+                             <input type="hidden" name="nopo_lama[]" value="{{$po->Nopo_relokasi}}">
+                             <input type="hidden" name="hargasewadriver[]" value="{{$po->Hargasewadriver_relokasi}}">
+                           @endif
+
+                         @endforeach
+                      </tbody>
+                    </table>
+                    <br>
+                    <p>
+                      Demikian kami sampaikan, atas perhatian dan kerjasama Bapak kami ucapkan terima kasih.
+                    </p>
+                    <p>
+                      Hormat Kami,<br>
+                      <select class="form-control form-control-sm" id="pb1" style="width: 300px;display: inline;">
+                        <option>Pilih Pejabat 1</option>
+                        @foreach($pejabats as $pejabat)
+                          @if($pejabat->active != '1')  
+                            <option value="{{$pejabat->id}}">{{$pejabat->nama}} - {{$pejabat->jabatan_id}} - {{$pejabat->unitkerja_id}}</option>
+                          @endif
+                        @endforeach
+                      </select>
+                      &nbsp | &nbsp
+                      <select class="form-control form-control-sm"  id="pb2" style="width: 300px;display: inline;">
+                        <option>Pilih Pejabat 2</option>
+                        @foreach($pejabats as $pejabat)
+                          @if($pejabat->active != '1')  
+                            <option value="{{$pejabat->id}}">{{$pejabat->nama}} - {{$pejabat->jabatan_id}} - {{$pejabat->unitkerja_id}}</option>
+                          @endif
+                        @endforeach
+                      </select>
+                      <br>
+                      <br>
+
+                      <div><b>PT BANK CENTRAL ASIA, Tbk.</b></div>     
+                    
+                      <span id="unitkerja_pb1">Unit Kerja PB 1</span><span id="unitkerja_pb2"> – Unit Kerja PB 2</span>
+
+                    </p>
+                    <br><br><br><br>
+                    <div class="row">
+                      <div class="col-md-3">
+                        <b><span id="nama_pb1">[Nama PB 1]</span></b> <br>
+                        <span id="jabatan_pb1">[jabatan PB 1]</span>
+                      </div>
+                      <div class="col-md-9">
+                        <b><span id="nama_pb2">[Nama PB 2]</span></b> <br>
+                        <span id="jabatan_pb2">[jabatan PB 2]</span>
+                      </div>
+                    </div>
+
+
+                  <br>

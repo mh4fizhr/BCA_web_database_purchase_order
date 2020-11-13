@@ -1,0 +1,322 @@
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+                          
+                          <td>
+                            {{$po->MulaiSewa->format('d-M-Y')}}
+                          </td>
+
+                        <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+                          <td>
+                            @if($po->Tgl_bastk == '')
+                              -
+                            @else
+                              {{$po->Tgl_bastk}}
+                            @endif
+                          </td>
+
+                        <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+                          <td>
+                            @if($po->Tgl_bastd == '')
+                              -
+                            @else
+                              {{$po->Tgl_bastd}}
+                            @endif
+                          </td>
+
+                        <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+                          <td>
+                            @if($po->Efisien_relokasi == '')
+                              -
+                            @else
+                              {{$po->Efisien_relokasi->format('d-M-Y')}}
+                            @endif
+                          </td>
+
+                        <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->  
+                          
+                            @if($po->Tgl_cutoff == '')
+                             <td> - </td>
+                            @elseif($po->Tgl_cutoff == '2012-12-12 00:00:00')
+                             <td> - </td>
+                            @else
+                              <td class="bg-danger text-white"> {{$po->Tgl_cutoff->format('d-M-Y')}} </td>
+                            @endif
+                          
+                        <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+                          <td>
+                            {{$po->SelesaiSewa->format('d-M-Y')}}
+                          </td>
+
+                        <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+                          <td>
+                            @currency($po->HargaSewaMobil)
+                          </td>
+
+                        <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+                          <td>
+                            @currency($po->HargaSewaDriver2019)
+                          </td>
+
+                        <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+                          <td>
+                            <?php $hsmd = $po->HargaSewaDriver2019 + $po->HargaSewaMobil ?>
+                            @currency($hsmd)
+                          </td>
+
+                        <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+                          <td>
+                            {{$po->NoRegister}}
+                          </td>
+
+                        <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                        <table id="myTable"  class="table align-items-center table-flush text-center">
+                    <thead class="thead-light">
+                      <tr>
+                        <th scope="col"><b>No</b></th>
+                        <th scope="col"><b>No PO</b></th>
+                        <th scope="col"><b>Jenis Sewa</b></th>
+                        <th scope="col"><b>CP/D</b></th>
+                        <th scope="col"><b>Merek & Type</b></th>
+                        <th scope="col"><b>Nopol</b></th>
+                        <th scope="col"><b>Vendor</b></th>
+                        <th scope="col"><b>Cabang</b></th>
+                        <th scope="col"><b>Kota</b></th>
+                        <th scope="col"><b>Nama Driver</b></th>
+<!--                         <th scope="col"><b>Mulai Sewa</b></th>
+                        <th scope="col"><b>Tgl Bastk</b></th>
+                        <th scope="col"><b>Tgl Bastd</b></th>
+                        <th scope="col"><b>Tgl Relokasi</b></th>
+                        <th scope="col"><b>Tgl Cut Off</b></th>
+                        <th scope="col"><b>Selesai Sewa</b></th>
+                        <th scope="col"><b>Harga Sewa Mobil(Rp)</b></th>
+                        <th scope="col"><b>Harga Sewa Driver 2019(Rp)</b></th>
+                        <th scope="col"><b>Harga Sewa Mobil + Driver(Rp)</b></th>
+                        <th scope="col"><b>No Register</b></th> -->
+                        <th scope="col"><b>Status</b></th>
+                        <th scope="col"><b>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                       <?php 
+                      $i = 1;
+                    ?>
+                    @foreach($pos as $po)
+                    @if($po->status == 1)
+                    <tr role="row" class="odd" style="height: 100px">
+                      <td>{{$i}}</td>
+
+                      <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+                          @if($po->Efisien_relokasi <= $currentDateTime && $po->Efisien_relokasi != '')
+                            <td>
+                              {{$po->Nopo_relokasi}}
+                              
+                            </td> 
+                          @else
+                            <td>{{$po->NoPo}}
+                              @if($po->Po_multiple_start == '' && $po->Po_multiple_start == '')
+                              @else
+                                <span class="badge badge-default">{{$po->Po_multiple_start}}/{{$po->Po_multiple_end}}</span>
+                              @endif
+                            </td>
+                          @endif
+
+                      <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+                          @if($po->Tgl_cutoff <= $currentDateTime && $po->Tgl_cutoff != '')
+                            <td>
+                              {{$po->Sewa_sementara}}
+                              
+                            </td> 
+                          @else
+                            @if($po->Sewa == 'null')
+                             <td class="bg-danger text-white"> {{$po->Sewa}} </td>
+                            @else
+                             <td> {{$po->Sewa}} </td>
+                            @endif
+                          @endif
+                          
+
+                       <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->   
+                          
+                          <td>{{$po->CP}}</td>
+
+                       <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+                          <td>
+
+                            @if($po->Mobil_id == 'null')
+                              Tanpa Unit
+                            @elseif($po->Mobil_id == '')
+                              Tanpa Unit
+                            @else
+                              @foreach($mobils as $mobil)
+                                @if($po->Mobil_id == $mobil->id)
+                                  {{$mobil->MerekMobil}} {{$mobil->Type}} 
+                                @endif
+                              @endforeach
+                            @endif
+
+                            
+                          </td>
+
+                        <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+                          <td>
+
+                            @if($po->Nopol == 'null')
+                              Tanpa Unit
+                            @elseif($po->Nopol == '')
+                              Tanpa Unit
+                            @else
+                              {{$po->Nopol}}
+                            @endif
+ 
+                          </td>
+
+                        <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+                          <td>
+                            @foreach($vendors as $vendor)
+                              @if($po->Vendor_Driver == $vendor->id)
+                                {{$vendor->NamaVendor}}
+                              @endif
+                            @endforeach
+                          </td>
+
+                        <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+                          @if(empty($po->Cabang_relokasi))
+
+                            <td>
+                              @foreach($cabangs as$cabang)
+                                @if($po->Cabang_id == $cabang->id)
+                                  {{$cabang->KodeCabang}} - {{$cabang->NamaCabang}}
+                                @endif
+                              @endforeach
+                            </td>
+                            <td> 
+                              @foreach($cabangs as$cabang)
+                                @if($po->Cabang_id == $cabang->id)
+                                  {{$cabang->Kota}}
+                                @endif
+                              @endforeach
+                            </td>
+
+                          @else
+
+                            @if($po->Efisien_relokasi <= $currentDateTime)
+
+                              <td>
+                                @foreach($cabangs as $cabang)
+                                  @if($po->Cabang_relokasi == $cabang->id)
+                                    {{$cabang->KodeCabang}} - {{$cabang->NamaCabang}} <span class="text-warning">(Relokasi)</span>
+                                  @endif
+                                @endforeach
+                              </td>
+                              <td> 
+                                @foreach($cabangs as $cabang)
+                                  @if($po->Cabang_relokasi == $cabang->id)
+                                    {{$cabang->Kota}} <span class="text-warning">(Relokasi)</span>
+                                  @endif
+                                @endforeach
+                              </td>
+
+                            @else
+
+                              <td>
+                                @foreach($cabangs as$cabang)
+                                  @if($po->Cabang_id == $cabang->id)
+                                    {{$cabang->KodeCabang}} - {{$cabang->NamaCabang}}
+                                  @endif
+                                @endforeach
+                              </td>
+                              <td> 
+                                @foreach($cabangs as$cabang)
+                                  @if($po->Cabang_id == $cabang->id)
+                                    {{$cabang->Kota}}
+                                  @endif
+                                @endforeach
+                              </td>
+
+                              @endif
+                            
+                          @endif
+
+                        <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+                          <td>
+                            @if($po->Driver_id == '')
+                              -
+                            @else
+                              @foreach($drivers as $driver)
+                                @if($po->Driver_id == $driver->id)
+                                  {{$driver->NamaDriver}}
+                                @endif
+                              @endforeach
+                            @endif
+                          </td>
+
+                        
+
+                          <td>
+                            @if($po->Efisien_relokasi <= $currentDateTime && $po->Efisien_relokasi != '' || $po->Tgl_cutoff <= $currentDateTime && $po->Tgl_cutoff != '')
+                              @if($po->Sewa_sementara == 'null')
+                                <span class="badge badge-sm badge-danger">Not Active</span>
+                              @else
+                                <span class="badge badge-sm badge-success">Active</span>
+                              @endif
+                            @else
+                              <span class="badge badge-sm badge-success">Active</span>
+                            @endif
+                          </td>
+
+                        <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+                          <td>
+                              @if(auth::user()->status == 'operasional' || auth::user()->status == 'admin')
+
+                              <a class="btn btn-info btn-sm" href="/backend/po/edit_dashboard/{{ $po->id }}" >
+                                  <i class="fas fa-pencil-alt" >
+                                  </i>
+                                  Edit
+                              </a>
+
+                              @endif
+                              <a class="btn btn-warning btn-sm" href="/backend/po/show/{{ $po->id }}">
+                                  <i class="fas fa-folder">
+                                  </i>
+                                  Lihat detail
+                              </a>
+                          </td>
+
+                          <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+                          <?php $i++; ?>
+                    </tr>
+                    @endif
+                    @endforeach
+                    </tbody>
+                  </table>
